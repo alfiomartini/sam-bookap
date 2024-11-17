@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
+Description: SAM template for Book Inventory Management with API Gateway, Lambda, and DynamoDB
+
+Resources:
+  BooksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: BooksTable
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+  GetBookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/handlers/GetBook/
+      Handler: getBook.handler
+      Runtime: nodejs20.x
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref BooksTable
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref BooksTable
+      Events:
+        GetBookApi:
+          Type: Api
+          Properties:
+            Path: /books/{id}
+            Method: GET
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: false # Set to true for easier debugging in development
+        EntryPoints:
+          - getBook.ts
+
+  CreateBookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/handlers/CreateBook/
+      Handler: createBook.handler
+      Runtime: nodejs20.x
+      Timeout: 30
+      MemorySize: 256
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref BooksTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref BooksTable
+      Events:
+        CreateBookApi:
+          Type: Api
+          Properties:
+            Path: /books
+            Method: POST
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: false # Set to true for easier debugging in development
+        EntryPoints:
+          - createBook.ts
+
+  UpdateBookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/handlers/UpdateBook/
+      Handler: updateBook.handler
+      Runtime: nodejs20.x
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref BooksTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref BooksTable
+      Events:
+        UpdateBookApi:
+          Type: Api
+          Properties:
+            Path: /books/{id}
+            Method: PUT
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: false # Set to true for easier debugging in development
+        EntryPoints:
+          - updateBook.ts
+
+Outputs:
+  GetBookApiEndpoint:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/{id}"
+    Description: "Endpoint for getting a book by ID"
+
+  CreateBookApiEndpoint:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books"
+    Description: "Endpoint for creating a new book"
+
+  UpdateBookApiEndpoint:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/{id}"
+    Description: "Endpoint for updating a book by ID"
