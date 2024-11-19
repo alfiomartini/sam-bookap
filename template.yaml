@@ -48,8 +48,6 @@ Resources:
       CodeUri: src/handlers/CreateBook/
       Handler: createBook.handler
       Runtime: nodejs20.x
-      Timeout: 30
-      MemorySize: 256
       Environment:
         Variables:
           TABLE_NAME: !Ref BooksTable

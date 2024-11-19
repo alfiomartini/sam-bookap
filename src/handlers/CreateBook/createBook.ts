@@ -1,8 +1,9 @@
-import { DynamoDB } from "aws-sdk";
+import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { v4 as uuidv4 } from "uuid";
+import { marshall } from "@aws-sdk/util-dynamodb";
 
-const dynamoDB = new DynamoDB.DocumentClient({
+const dynamoDBClient = new DynamoDBClient({
   region: process.env.AWS_REGION || "us-east-1",
 });
 const TABLE_NAME = process.env.TABLE_NAME || "";
@@ -21,19 +22,16 @@ export const handler = async (
       }),
     };
   }
-  console.log('body', title, author, year);
   const params = {
     TableName: TABLE_NAME,
-    Item: { id, title, author, year },
+    Item: marshall({ id, title, author, year }),
   };
 
   try {
-    console.log('params', params);
-    await dynamoDB.put(params).promise();
-    console.log('accessed dynamoDB');
+    await dynamoDBClient.send(new PutItemCommand(params));
     return { statusCode: 201, body: JSON.stringify({ id, title, author, year }) };
   } catch (error) {
-    console.log('Error', error);
+    console.log('vreateBook Error', error);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Internal Server Error" }),

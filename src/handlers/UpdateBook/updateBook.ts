@@ -1,16 +1,17 @@
-import { DynamoDB } from "aws-sdk";
+import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
-const dynamoDB = new DynamoDB.DocumentClient();
+const client = new DynamoDBClient({});
 const TABLE_NAME = process.env.TABLE_NAME || "";
 
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  const { bookId } = event.pathParameters || {};
+  const { id } = event.pathParameters || {};
   const { title, author, year } = JSON.parse(event.body || "{}");
 
-  if (!bookId) {
+  if (!id) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: "Book ID is required" }),
@@ -54,19 +55,18 @@ export const handler = async (
 
   const params = {
     TableName: TABLE_NAME,
-    Key: {
-      bookId,
-    },
+    Key: marshall({ id }),
     UpdateExpression: updateExpression,
     ExpressionAttributeNames: expressionAttributeNames,
-    ExpressionAttributeValues: expressionAttributeValues,
-    ReturnValues: "ALL_NEW",
+    ExpressionAttributeValues: marshall(expressionAttributeValues),
+    ReturnValues: "ALL_NEW" as const,
   };
 
   try {
-    const { Attributes } = await dynamoDB.update(params).promise();
-    return { statusCode: 200, body: JSON.stringify(Attributes) };
+    const { Attributes } = await client.send(new UpdateItemCommand(params));
+    return { statusCode: 200, body: JSON.stringify(Attributes ? unmarshall(Attributes) : {}) };
   } catch (error) {
+    console.log('updateBook error', error)
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Internal Server Error" }),

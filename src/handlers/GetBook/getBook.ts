@@ -1,7 +1,8 @@
-import { DynamoDB } from "aws-sdk";
+import { DynamoDBClient, GetItemCommand, GetItemCommandInput } from "@aws-sdk/client-dynamodb";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
-const dynamoDB = new DynamoDB.DocumentClient({
+const client = new DynamoDBClient({
   region: process.env.AWS_REGION || "us-east-1",
 });
 const TABLE_NAME = process.env.TABLE_NAME || "";
@@ -9,25 +10,22 @@ const TABLE_NAME = process.env.TABLE_NAME || "";
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  const { bookId } = event.pathParameters || {};
+  const { id } = event.pathParameters || {};
 
-  console.log('bookId, tableName', bookId, TABLE_NAME);
-  if (!bookId) {
+  if (!id) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: "Book ID is required" }),
     };
   }
 
-  const params = {
+  const params: GetItemCommandInput = {
     TableName: TABLE_NAME,
-    Key: {
-      bookId,
-    },
+    Key: marshall({ id }),
   };
 
   try {
-    const { Item } = await dynamoDB.get(params).promise();
+    const { Item } = await client.send(new GetItemCommand(params));
     if (!Item) {
       return {
         statusCode: 404,
@@ -37,9 +35,10 @@ export const handler = async (
 
     return {
       statusCode: 200,
-      body: JSON.stringify(Item),
+      body: JSON.stringify(unmarshall(Item)),
     };
   } catch (error) {
+    console.log('getBook error', error);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Internal Server Error" }),

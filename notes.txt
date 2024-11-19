@@ -1,0 +1,16 @@
+- Deploy: sam deploy --guided --profile aws-alfio-hotmail
+
+- Testing DynamoDB Table:
+ aws dynamodb put-item \
+  --profile aws-alfio-hotmail \
+  --table-name BooksTable \
+  --item '{"id": {"S": "1"}, "title": {"S": "Test Book"}, "author": {"S": "Author"}, "year": {"N": "2024"}}'
+
+- Testing Lambda function locally:
+   sam local invoke CreateBookFunction --event events/createBook.json
+   sam local invoke GetBookFunction --event events/getBook.json
+   sam local invoke UpdateBookFunction --event events/createBook.json
+
+- Testing AWS SDK out of lambda:
+    AWS_PROFILE=my-profile-name npx ts-node experiments/testPutDynamodb-sdk-v3.ts 
+    AWS_PROFILE=my-profile-name npx ts-node experiments/testPutDynamodb-sdk-v3.ts 
