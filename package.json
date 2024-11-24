@@ -6,7 +6,9 @@
   "scripts": {
     "build:tsc": "rimraf build && tsc",
     "prebuild": "rimraf dist",
-    "build": "node esbuild.config.js"
+    "build": "node esbuild.config.js && sam build",
+    "deploy": "./deploy.sh",
+    "delete": "sam delete --stack-name sam-bookapp"
   },
   "keywords": [],
   "author": "",

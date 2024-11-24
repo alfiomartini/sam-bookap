@@ -2,7 +2,18 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
 Description: SAM template for Book Inventory Management with API Gateway, Lambda, and DynamoDB
 
+Globals:
+  Function:
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref BooksTable
+
 Resources:
+  DeploymentBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: sam-bookapp-bucket
+
   BooksTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -21,9 +32,6 @@ Resources:
       CodeUri: dist/src/GetBook
       Handler: getBook.handler
       Runtime: nodejs20.x
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref BooksTable
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref BooksTable
@@ -40,9 +48,6 @@ Resources:
       CodeUri: dist/src/CreateBook
       Handler: createBook.handler
       Runtime: nodejs20.x
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref BooksTable
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref BooksTable
@@ -59,9 +64,6 @@ Resources:
       CodeUri: dist/src/UpdateBook
       Handler: updateBook.handler
       Runtime: nodejs20.x
-      Environment:
-        Variables:
-          TABLE_NAME: !Ref BooksTable
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref BooksTable
@@ -81,6 +83,6 @@ Outputs:
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books"
     Description: "Endpoint for creating a new book"
 
-  UpdateBookApiEndpoint:
+  UpdateBookApi:
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/{id}"
     Description: "Endpoint for updating a book by ID"

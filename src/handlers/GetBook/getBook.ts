@@ -10,6 +10,7 @@ const TABLE_NAME = process.env.TABLE_NAME || "";
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+  console.log('AWS_REGION', process.env.AWS_REGION);
   const { id } = event.pathParameters || {};
 
   if (!id) {
