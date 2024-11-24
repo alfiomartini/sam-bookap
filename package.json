@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:tsc": "rimraf build && tsc",
+    "prebuild": "rimraf dist",
+    "build": "node esbuild.config.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +21,7 @@
     "@types/node": "^22.9.0",
     "@types/uuid": "^10.0.0",
     "esbuild": "^0.24.0",
+    "rimraf": "^6.0.1",
     "typescript": "^5.6.3"
   }
 }

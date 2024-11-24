@@ -18,7 +18,7 @@ Resources:
   GetBookFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/handlers/GetBook/
+      CodeUri: dist/src/GetBook
       Handler: getBook.handler
       Runtime: nodejs20.x
       Environment:
@@ -33,19 +33,11 @@ Resources:
           Properties:
             Path: /books/{id}
             Method: GET
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: es2020
-        Sourcemap: false # Set to true for easier debugging in development
-        EntryPoints:
-          - getBook.ts
 
   CreateBookFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/handlers/CreateBook/
+      CodeUri: dist/src/CreateBook
       Handler: createBook.handler
       Runtime: nodejs20.x
       Environment:
@@ -60,19 +52,11 @@ Resources:
           Properties:
             Path: /books
             Method: POST
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: es2020
-        Sourcemap: false # Set to true for easier debugging in development
-        EntryPoints:
-          - createBook.ts
 
   UpdateBookFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/handlers/UpdateBook/
+      CodeUri: dist/src/UpdateBook
       Handler: updateBook.handler
       Runtime: nodejs20.x
       Environment:
@@ -87,14 +71,6 @@ Resources:
           Properties:
             Path: /books/{id}
             Method: PUT
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: es2020
-        Sourcemap: false # Set to true for easier debugging in development
-        EntryPoints:
-          - updateBook.ts
 
 Outputs:
   GetBookApiEndpoint:
