@@ -26,7 +26,9 @@ export const handler = async (
   };
 
   try {
+    console.log('accessing dynamoDBClient');
     const { Item } = await client.send(new GetItemCommand(params));
+    console.log('Book retrieved successfully');
     if (!Item) {
       return {
         statusCode: 404,

@@ -2,7 +2,9 @@ import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
-const client = new DynamoDBClient({});
+const client = new DynamoDBClient({
+  region: process.env.AWS_REGION || "us-east-1",
+});
 const TABLE_NAME = process.env.TABLE_NAME || "";
 
 export const handler = async (
@@ -64,7 +66,9 @@ export const handler = async (
   };
 
   try {
+    console.log('accessing dynamoDBClient');
     const { Attributes } = await client.send(new UpdateItemCommand(params));
+    console.log('Book updated successfully');
     return { statusCode: 200, body: JSON.stringify(Attributes ? unmarshall(Attributes) : {}) };
   } catch (error) {
     console.log('updateBook error', error)

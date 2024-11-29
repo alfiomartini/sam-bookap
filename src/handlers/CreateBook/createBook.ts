@@ -29,10 +29,12 @@ export const handler = async (
   };
 
   try {
+    console.log('accessing dynamoDBClient');
     await dynamoDBClient.send(new PutItemCommand(params));
+    console.log('Book created successfully');
     return { statusCode: 201, body: JSON.stringify({ id, title, author, year }) };
   } catch (error) {
-    console.log('vreateBook Error', error);
+    console.log('createBook Error', error);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Internal Server Error" }),
