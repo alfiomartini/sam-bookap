@@ -68,7 +68,7 @@ export const handler = async (
   try {
     console.log('accessing dynamoDBClient');
     const { Attributes } = await client.send(new UpdateItemCommand(params));
-    console.log('Book updated successfully');
+    console.log('dynamicDBClient accessed');
     return { statusCode: 200, body: JSON.stringify(Attributes ? unmarshall(Attributes) : {}) };
   } catch (error) {
     console.log('updateBook error', error)

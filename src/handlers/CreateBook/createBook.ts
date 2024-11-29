@@ -31,7 +31,7 @@ export const handler = async (
   try {
     console.log('accessing dynamoDBClient');
     await dynamoDBClient.send(new PutItemCommand(params));
-    console.log('Book created successfully');
+    console.log('dynamicDBClient accessed');
     return { statusCode: 201, body: JSON.stringify({ id, title, author, year }) };
   } catch (error) {
     console.log('createBook Error', error);
