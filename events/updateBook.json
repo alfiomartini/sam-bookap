@@ -1,6 +1,6 @@
 {
-  "body": "{\"title\":\"Title Changed 2\",\"author\":\"Author Changed\",\"year\":1960}",
+  "body": "{\"title\":\"Title Changed 2\",\"author\":\"Author Changed 2\",\"year\":1960}",
   "pathParameters": {
-    "id": 1
+    "id": "9c00df46-e378-4b6b-8e74-48189bdd859d"
   }
 }
