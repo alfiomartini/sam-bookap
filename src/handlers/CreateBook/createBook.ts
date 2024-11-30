@@ -1,18 +1,26 @@
-import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient} from "@aws-sdk/client-dynamodb";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { v4 as uuidv4 } from "uuid";
-import { marshall } from "@aws-sdk/util-dynamodb";
+import { CreateBookUseCase } from "../../application/usecases/CreateBookUseCase";
+import { Book} from "../../domain/entities/Book";
+import { DynamoDBBookRepository } from "../../infrastructure/repositories/DynamoDBRepository";
 
 const dynamoDBClient = new DynamoDBClient({
   region: process.env.AWS_REGION || "us-east-1",
 });
+
+const repository = new DynamoDBBookRepository(dynamoDBClient);
+const createBookUseCase = new CreateBookUseCase(repository);
+
 const TABLE_NAME = process.env.TABLE_NAME || "";
 
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   console.log('AWS_REGION', process.env.AWS_REGION);
-  const { title, author, year } = JSON.parse(event.body || "{}");
+
+  const { title, author, year } = JSON.parse(event.body || "{}") ;
+
   const id = uuidv4();
 
   if (!title || !author || !year) {
@@ -23,16 +31,23 @@ export const handler = async (
       }),
     };
   }
-  const params = {
-    TableName: TABLE_NAME,
-    Item: marshall({ id, title, author, year }),
-  };
+  const createBook = { id, title, author, year } as Book;
+   
 
   try {
-    console.log('accessing dynamoDBClient');
-    await dynamoDBClient.send(new PutItemCommand(params));
-    console.log('dynamicDBClient accessed');
-    return { statusCode: 201, body: JSON.stringify({ id, title, author, year }) };
+    const createdBook = await createBookUseCase.execute(createBook);
+    console.log('createBook handler createdBook', createdBook);
+    if (!createdBook) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ message: "Internal Server Error" }),
+      };
+    } 
+
+    return {
+      statusCode: 201,
+      body: JSON.stringify(createdBook),
+    }
   } catch (error) {
     console.log('createBook Error', error);
     return {

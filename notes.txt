@@ -10,7 +10,8 @@
    sam local invoke CreateBookFunction --event events/createBook.json --profile aws-alfio-hotmail
    sam local invoke GetBookFunction --event events/getBook.json  --profile aws-alfio-hotmail
    sam local invoke UpdateBookFunction --event events/updateBook.json  --profile aws-alfio-hotmail
-
+   sam local invoke DeleteBookFunction --event events/deleteBook.json --profile aws-alfio-hotmail
+   
 - Testing AWS SDK out of lambda:
     AWS_PROFILE=my-profile-name npx ts-node experiments/testPutDynamodb-sdk-v3.ts 
     AWS_PROFILE=my-profile-name npx ts-node experiments/testPutDynamodb-sdk-v3.ts 

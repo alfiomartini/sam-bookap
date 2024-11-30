@@ -7,6 +7,7 @@ esbuild
       "src/handlers/GetBook/getBook.ts",
       "src/handlers/UpdateBook/updateBook.ts",
       "src/handlers/CreateBook/createBook.ts",
+      "src/handlers/DeleteBook/deleteBook.ts",
     ],
     bundle: true,
     platform: "node",

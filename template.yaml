@@ -42,6 +42,22 @@ Resources:
             Path: /books/{id}
             Method: GET
 
+  DeleteBookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/src/DeleteBook
+      Handler: deleteBook.handler
+      Runtime: nodejs20.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref BooksTable
+      Events:
+        DeleteBookApi:
+          Type: Api
+          Properties:
+            Path: /books/{id}
+            Method: DELETE
+
   CreateBookFunction:
     Type: AWS::Serverless::Function
     Properties:
