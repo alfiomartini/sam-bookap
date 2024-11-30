@@ -99,6 +99,10 @@ Outputs:
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books"
     Description: "Endpoint for creating a new book"
 
-  UpdateBookApi:
+  UpdateBookApiEndpoint:
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/{id}"
     Description: "Endpoint for updating a book by ID"
+
+  DeleteBookApiEndpoint:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/books/{id}"
+    Description: "Endpoint for deleting a book by ID"
